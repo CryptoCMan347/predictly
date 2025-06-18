@@ -1,17 +1,27 @@
 'use client';
 import React from 'react';
+import HeroBanner from '../components/HeroBanner';
+import HowItWorks from '../components/HowItWorks';
+import PvPTeaser from '../components/PvPTeaser';
+import ScreenshotsMockups from '../components/ScreenshotsMockups';
+import TestimonialsLeaderboard from '../components/TestimonialsLeaderboard';
+import JoinNowCTA from '../components/JoinNowCTA';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-100">
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8">
-          Welcome to Predictly
-        </h1>
-        <p className="text-center text-gray-600">
-          The skill-based prediction platform where knowledge meets opportunity
-        </p>
-      </div>
-    </main>
+    <>
+      {/* Hero Banner Section */}
+      <HeroBanner />
+      {/* How It Works Section */}
+      <HowItWorks />
+      {/* PvP + Solo Mode Teaser Section */}
+      <PvPTeaser />
+      {/* Screenshots/Animated Mockups Section */}
+      <ScreenshotsMockups />
+      {/* Testimonials/Leaderboard Section */}
+      <TestimonialsLeaderboard />
+      {/* Join Now CTA Section */}
+      <JoinNowCTA />
+    </>
   );
 } 

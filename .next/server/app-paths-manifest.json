@@ -1,0 +1,4 @@
+{
+  "/payment-success/page": "app/payment-success/page.js",
+  "/my-credits/page": "app/my-credits/page.js"
+}
