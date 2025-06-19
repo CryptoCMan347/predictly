@@ -1,8 +1,9 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -17,5 +18,13 @@ export default function PaymentSuccessPage() {
         {sessionId && <div className="mt-4 text-xs text-gray-400">Session ID: {sessionId}</div>}
       </div>
     </main>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 } 

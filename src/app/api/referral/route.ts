@@ -58,25 +58,5 @@ export async function GET() {
 
 // GET /api/referral/referred
 // Returns a list of users referred by the authenticated user
-export async function GET_referred(req) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  try {
-    // Find the referral record for this user
-    const referral = await prisma.referral.findFirst({ where: { userId: session.user.id } });
-    if (!referral) {
-      return NextResponse.json({ referred: [] });
-    }
-    // Find users who were referred by this referral
-    const referredUsers = await prisma.user.findMany({
-      where: { referredById: referral.id },
-      select: { id: true, email: true, username: true, created_at: true },
-    });
-    return NextResponse.json({ referred: referredUsers });
-  } catch (error) {
-    console.error('Error retrieving referred users:', error);
-    return NextResponse.json({ error: 'Failed to retrieve referred users' }, { status: 500 });
-  }
-} 
+// Note: The handler for /api/referral/referred should be in src/app/api/referral/referred/route.ts
+// Only export GET and POST from this file. 

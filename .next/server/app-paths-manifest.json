@@ -1,4 +1,23 @@
 {
-  "/payment-success/page": "app/payment-success/page.js",
-  "/my-credits/page": "app/my-credits/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/account/route": "app/api/account/route.js",
+  "/api/account/update/route": "app/api/account/update/route.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/referral/referred/route": "app/api/referral/referred/route.js",
+  "/account/page": "app/account/page.js",
+  "/api/auth/forgot-password/route": "app/api/auth/forgot-password/route.js",
+  "/api/referral/route": "app/api/referral/route.js",
+  "/api/transactions/route": "app/api/transactions/route.js",
+  "/api/stripe/webhook/route": "app/api/stripe/webhook/route.js",
+  "/api/stripe/checkout/route": "app/api/stripe/checkout/route.js",
+  "/auth/signin/page": "app/auth/signin/page.js",
+  "/auth/forgot-password/page": "app/auth/forgot-password/page.js",
+  "/auth/signup/page": "app/auth/signup/page.js",
+  "/api/auth/signup/route": "app/api/auth/signup/route.js",
+  "/contest/[id]/page": "app/contest/[id]/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/leaderboard/page": "app/leaderboard/page.js",
+  "/my-credits/page": "app/my-credits/page.js",
+  "/page": "app/page.js",
+  "/payment-success/page": "app/payment-success/page.js"
 }
