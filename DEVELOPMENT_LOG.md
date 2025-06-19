@@ -1,5 +1,35 @@
 # Predictly Development Log
 
+## Project Summary
+Predictly is a modern web application for prediction-based contests, built with Next.js 14, TypeScript, and Tailwind CSS. It allows users to sign up, participate in contests, purchase credits, and track their performance. The platform features a referral system, Stripe payment integration, and a gamified leaderboard. The backend uses Prisma ORM with a Neon Postgres database, and authentication is handled by NextAuth.js with JWT sessions and a Prisma adapter. The app is deployed on Vercel.
+
+### Technical Stack
+- **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend:** Next.js API routes, Prisma ORM
+- **Database:** Neon Postgres
+- **Authentication:** NextAuth.js (JWT, Prisma Adapter)
+- **Payments:** Stripe (checkout, webhook)
+- **Deployment:** Vercel
+
+### Core Features
+- User authentication and profiles (sign up, sign in, session management)
+- Dashboard with credits, contests, and stats
+- Contest system with dynamic detail pages and prediction forms
+- Leaderboard with gamification (XP, streaks, trophies, pro status)
+- Referral system (generate and track codes, bonuses)
+- Stripe payments for purchasing credits
+- Transaction logging
+- Responsive, modern UI with reusable components
+- Prisma/Postgres database with migrations for all features
+
+### Important Context
+- All environment variables (DATABASE_URL, NEXTAUTH_URL, NEXTAUTH_SECRET, STRIPE keys, etc.) must be set in Vercel for production.
+- Prisma schema includes custom fields for user gamification and referrals.
+- Stripe webhook securely credits user accounts and logs transactions.
+- The app is designed for extensibility (future: more payment providers, admin features, notifications).
+
+---
+
 ## Project Initialization
 
 ### Setup Decisions
@@ -84,8 +114,32 @@
 
 ---
 
-**Sign up, sign in, and user session display are now fully working!**
+## Payments & Credits (Stripe Integration)
+- **Stripe Checkout:** Implemented `/api/stripe/checkout` to create Stripe sessions for credit purchases.
+- **Stripe Webhook:** `/api/stripe/webhook` securely verifies Stripe events, credits user accounts, and logs transactions in the database.
+- **Payment Success Page:** `/payment-success` page confirms successful payments and displays session info.
+- **Transaction Logging:** All credit purchases are logged in the `Transaction` model.
+- **Testing:** Verified end-to-end flow for purchasing credits and updating user balances.
 
 ---
 
-**Next: Choose new features or polish to build!** 
+## Referral System
+- **Referral Code Generation:** `/api/referral` allows users to generate and retrieve unique referral codes.
+- **Referred Users:** `/api/referral/referred` returns users referred by the current user.
+- **Referral Bonuses:** Referral relationships and bonuses are tracked in the database.
+
+---
+
+## Recent Fixes & Improvements
+- Fixed build errors related to API route exports (e.g., only exporting GET/POST in API routes).
+- Wrapped `useSearchParams` in a Suspense boundary on `/payment-success` to resolve Next.js build warnings.
+- Added clarifying comments and improved error handling in API routes.
+- Ensured all environment variables are documented and required for Vercel deployment.
+
+---
+
+**Sign up, sign in, user session display, Stripe payments, referral system, and user dashboard are now fully working!**
+
+---
+
+**Next: Choose new features, polish, or bug fixes to build!** 
