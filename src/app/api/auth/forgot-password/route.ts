@@ -16,6 +16,7 @@ export async function POST(req: Request) {
     await prisma.user.update({ where: { id: user.id }, data: { hashedPassword } });
     return NextResponse.json({ success: true });
   } catch (err) {
-    return NextResponse.json({ error: "Server error." }, { status: 500 });
+    console.error('API /api/auth/forgot-password error:', err);
+    return NextResponse.json({ error: "Server error.", details: String(err) }, { status: 500 });
   }
 } 

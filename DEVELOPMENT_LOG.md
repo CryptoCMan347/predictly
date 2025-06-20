@@ -3,6 +3,8 @@
 ## Project Summary
 Predictly is a modern web application for prediction-based contests, built with Next.js 14, TypeScript, and Tailwind CSS. It allows users to sign up, participate in contests, purchase credits, and track their performance. The platform features a referral system, Stripe payment integration, and a gamified leaderboard. The backend uses Prisma ORM with a Neon Postgres database, and authentication is handled by NextAuth.js with JWT sessions and a Prisma adapter. The app is deployed on Vercel.
 
+**Production URL:** https://predictly-live.vercel.app/
+
 ### Technical Stack
 - **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
 - **Backend:** Next.js API routes, Prisma ORM
@@ -24,6 +26,7 @@ Predictly is a modern web application for prediction-based contests, built with 
 
 ### Important Context
 - All environment variables (DATABASE_URL, NEXTAUTH_URL, NEXTAUTH_SECRET, STRIPE keys, etc.) must be set in Vercel for production.
+- **Production Vercel URL:** https://predictly-live.vercel.app/
 - Prisma schema includes custom fields for user gamification and referrals.
 - Stripe webhook securely credits user accounts and logs transactions.
 - The app is designed for extensibility (future: more payment providers, admin features, notifications).

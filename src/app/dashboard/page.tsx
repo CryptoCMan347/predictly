@@ -103,7 +103,6 @@ export default function Dashboard() {
         <section className="mb-6 p-4 rounded-lg bg-gradient-to-r from-green-800 via-black to-yellow-800 text-center shadow">
           <span className="font-bold text-green-400">🚨 New Contest:</span> Premier League PvP starts this weekend! Prize pool: <span className="text-yellow-300">5000 creds</span>
         </section>
-
         {/* My Credits */}
         <section className="mb-8 flex items-center justify-between bg-gray-900 rounded-lg p-6 shadow">
           <div>
@@ -119,7 +118,6 @@ export default function Dashboard() {
             {buying ? 'Processing...' : 'Buy More'}
           </button>
         </section>
-
         {/* Current Contests */}
         <section className="mb-8 bg-gray-900 rounded-lg p-6 shadow">
           <h2 className="text-2xl font-bold mb-4">Current Contests</h2>
@@ -136,7 +134,6 @@ export default function Dashboard() {
             </li>
           </ul>
         </section>
-
         {/* Past Performance */}
         <section className="mb-8 bg-gray-900 rounded-lg p-6 shadow">
           <h2 className="text-2xl font-bold mb-4">Past Performance</h2>
@@ -159,7 +156,6 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
-
         {/* Leaderboard Snippet */}
         <section className="mb-8 bg-gray-900 rounded-lg p-6 shadow">
           <h2 className="text-2xl font-bold mb-4">Top Players This Week</h2>

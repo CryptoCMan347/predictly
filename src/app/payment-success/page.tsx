@@ -1,30 +1,92 @@
 "use client";
 export const dynamic = "force-dynamic";
-import { useSearchParams } from "next/navigation";
-import React, { Suspense } from "react";
 
-function PaymentSuccessContent() {
-  const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
-
-  return (
-    <main className="min-h-screen flex items-center justify-center bg-black text-white animate-fade-in">
-      <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md text-center">
-        <h1 className="text-3xl font-bold mb-4 text-green-400">Payment Successful!</h1>
-        <p className="mb-4 text-lg">Thank you for your purchase.</p>
-        <p className="mb-4 text-green-300">Your credits will be added to your account shortly.</p>
-        <a href="/my-credits" className="inline-block mt-4 bg-green-500 hover:bg-green-400 text-black font-bold py-2 px-6 rounded-full text-lg shadow transition-all duration-200">Go to My Credits</a>
-        {/* Optionally show session ID for debugging */}
-        {sessionId && <div className="mt-4 text-xs text-gray-400">Session ID: {sessionId}</div>}
-      </div>
-    </main>
-  );
-}
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function PaymentSuccessPage() {
+  const { data: session, update } = useSession();
+  const router = useRouter();
+  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 5;
+  const retryDelay = 2000; // 2 seconds
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const refreshSession = async () => {
+      try {
+        await update();
+        
+        // If we've hit max retries, stop trying
+        if (retryCount >= maxRetries) {
+          setIsRefreshing(false);
+          return;
+        }
+
+        // Schedule next retry if needed
+        timeoutId = setTimeout(() => {
+          setRetryCount(prev => prev + 1);
+        }, retryDelay);
+
+      } catch (error) {
+        console.error('Error refreshing session:', error);
+        setIsRefreshing(false);
+      }
+    };
+
+    refreshSession();
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [update, retryCount]);
+
+  const handleViewCredits = () => {
+    router.push('/my-credits');
+    router.refresh();
+  };
+
   return (
-    <Suspense>
-      <PaymentSuccessContent />
-    </Suspense>
+    <main className="min-h-screen flex items-center justify-center bg-black text-white">
+      <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-4 text-green-400">Payment Successful!</h1>
+          <p className="mb-4 text-lg">Thank you for your purchase.</p>
+          {isRefreshing ? (
+            <div className="space-y-3">
+              <p className="text-green-400">Updating your credits...</p>
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400"></div>
+              </div>
+            </div>
+          ) : (
+            <p className="text-green-400">Your credits have been added to your account.</p>
+          )}
+        </div>
+        
+        <div className="space-y-3">
+          <button
+            onClick={handleViewCredits}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
+          >
+            View My Credits
+          </button>
+          
+          <Link 
+            href="/"
+            className="block w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
+          >
+            Return to Home
+          </Link>
+        </div>
+      </div>
+    </main>
   );
 } 

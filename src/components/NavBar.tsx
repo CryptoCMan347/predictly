@@ -14,8 +14,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/contest/1', label: 'Contests' },
-  { href: '/leaderboard', label: 'Leaderboard' },
-  { href: '/account', label: 'Account' }
+  { href: '/leaderboard', label: 'Leaderboard' }
 ];
 
 const NavBar: React.FC = () => {
@@ -83,14 +82,18 @@ const NavBar: React.FC = () => {
                 </Link>
               </li>
               <li className="ml-4">
-                <div className="w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center text-xl text-green-300 border-2 border-green-500 shadow-inner cursor-pointer" title={session.user?.email || 'User Profile'}>
+                <Link 
+                  href="/account"
+                  className="block w-9 h-9 bg-gray-700 rounded-full flex items-center justify-center text-xl text-green-300 border-2 border-green-500 shadow-inner hover:border-green-400 transition-colors"
+                  title={session.user?.email || 'User Profile'}
+                >
                   {/* User avatar or fallback icon */}
                   {session.user?.image ? (
                     <img src={session.user.image} alt="avatar" className="w-9 h-9 rounded-full" />
                   ) : (
                     <span role="img" aria-label="User">👤</span>
                   )}
-                </div>
+                </Link>
               </li>
               <li>
                 <button
