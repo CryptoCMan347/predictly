@@ -4,21 +4,18 @@ export const dynamic = "force-dynamic";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
-const CREDIT_PACKAGES = [
-  { credits: 100, price: 10 },
-  { credits: 250, price: 20 },
-  { credits: 500, price: 35 }
-];
-
 export default function MyCreditsPage() {
   const { data: session, status } = useSession();
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState<typeof CREDIT_PACKAGES[0] | null>(null);
+  const [creditsToBuy, setCreditsToBuy] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const minCredits = 50;
+  const price = creditsToBuy && !isNaN(Number(creditsToBuy)) ? (Number(creditsToBuy) / 10).toFixed(2) : "0.00";
+
   const handleOpenDialog = () => {
-    setSelectedPackage(null);
+    setCreditsToBuy("");
     setError("");
     setShowDialog(true);
   };
@@ -28,9 +25,30 @@ export default function MyCreditsPage() {
     setError("");
   };
 
-  const handleStripeCheckout = async () => {
-    if (!session?.user?.id || !selectedPackage) {
-      setError("Please select a credit package");
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === "") {
+      setCreditsToBuy("");
+      setError("");
+    } else if (/^\d+$/.test(value)) {
+      setCreditsToBuy(value);
+      if (Number(value) < minCredits) {
+        setError(`Minimum purchase is ${minCredits} credits.`);
+      } else {
+        setError("");
+      }
+    }
+  };
+
+  const handleBuyCredits = async () => {
+    if (!session?.user?.id) {
+      setError("Please sign in to purchase credits");
+      return;
+    }
+
+    const creditsNum = Number(creditsToBuy);
+    if (!creditsToBuy || isNaN(creditsNum) || creditsNum < minCredits) {
+      setError(`Minimum purchase is ${minCredits} credits.`);
       return;
     }
 
@@ -38,18 +56,20 @@ export default function MyCreditsPage() {
     setError("");
 
     try {
+      console.log('Sending checkout request:', { credits: creditsNum, userId: session.user.id });
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          credits: selectedPackage.credits,
+          credits: creditsNum,
           userId: session.user.id
         }),
       });
 
       const data = await res.json();
+      console.log('Checkout response:', data);
       
       if (!res.ok) {
         throw new Error(data.error || "Failed to start checkout");
@@ -61,47 +81,8 @@ export default function MyCreditsPage() {
         throw new Error("No checkout URL received");
       }
     } catch (err) {
-      console.error('Stripe checkout error:', err);
+      console.error('Checkout error:', err);
       setError(err instanceof Error ? err.message : "Failed to start checkout");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCryptoCheckout = async () => {
-    if (!session?.user?.id || !selectedPackage) {
-      setError("Please select a credit package");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/coinbase/checkout", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          creditAmount: selectedPackage.credits
-        }),
-      });
-
-      const data = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to start crypto checkout");
-      }
-
-      if (data.hostedUrl) {
-        window.location.href = data.hostedUrl;
-      } else {
-        throw new Error("No checkout URL received");
-      }
-    } catch (err) {
-      console.error('Coinbase checkout error:', err);
-      setError(err instanceof Error ? err.message : "Failed to start crypto checkout");
     } finally {
       setLoading(false);
     }
@@ -143,8 +124,8 @@ export default function MyCreditsPage() {
                 <div key={tx.id} className="bg-gray-800 rounded p-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <div className="font-mono text-green-400">+{tx.amount} credits</div>
-                      <div className="text-sm text-cyan-400">${(tx.amount / 10).toFixed(2)} via {tx.paymentType} ({tx.status})</div>
+                      <div className="font-mono text-green-400">+{tx.credits} credits</div>
+                      <div className="text-sm text-cyan-400">${tx.amount.toFixed(2)} via {tx.paymentType} ({tx.status})</div>
                     </div>
                     <div className="text-sm text-gray-400">
                       {new Date(tx.createdAt).toLocaleString()}
@@ -170,52 +151,32 @@ export default function MyCreditsPage() {
                 ×
               </button>
             </div>
-            
-            {/* Credit Packages */}
-            <div className="mb-6">
+            <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
-                Select Credit Package
+                Number of Credits
               </label>
-              <div className="space-y-2">
-                {CREDIT_PACKAGES.map((pkg) => (
-                  <button
-                    key={pkg.credits}
-                    onClick={() => setSelectedPackage(pkg)}
-                    className={`w-full p-3 rounded-lg border-2 transition-all ${
-                      selectedPackage?.credits === pkg.credits
-                        ? 'border-green-500 bg-gray-700'
-                        : 'border-gray-600 hover:border-gray-500'
-                    }`}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold">{pkg.credits} Credits</span>
-                      <span className="text-green-400">${pkg.price}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
+              <input
+                type="number"
+                value={creditsToBuy}
+                onChange={handleInputChange}
+                className="w-full bg-gray-700 rounded p-2 text-white"
+                placeholder={`Minimum ${minCredits} credits`}
+                min={minCredits}
+              />
             </div>
-
-            {/* Payment Options */}
-            <div className="space-y-3">
-              <button
-                onClick={handleStripeCheckout}
-                disabled={loading || !selectedPackage}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg disabled:opacity-50 transition duration-200"
-              >
-                {loading ? "Processing..." : "Pay with Card"}
-              </button>
-              
-              <button
-                onClick={handleCryptoCheckout}
-                disabled={loading || !selectedPackage}
-                className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-4 rounded-lg disabled:opacity-50 transition duration-200"
-              >
-                {loading ? "Processing..." : "Pay with Crypto"}
-              </button>
+            <div className="mb-4">
+              <p className="text-lg">
+                Total: <span className="font-bold">${price}</span>
+              </p>
             </div>
-
-            {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
+            <button
+              onClick={handleBuyCredits}
+              disabled={loading || !!error || !creditsToBuy}
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+            >
+              {loading ? "Processing..." : "Buy Now"}
+            </button>
+            {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
           </div>
         </div>
       )}
