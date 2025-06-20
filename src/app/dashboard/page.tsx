@@ -11,20 +11,6 @@ import { useSession } from 'next-auth/react';
  * Each module is a placeholder for now, with clear comments for future expansion.
  */
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string;
-      name?: string;
-      email?: string;
-      image?: string;
-      username?: string;
-      pro_status?: boolean;
-      credits?: number;
-    };
-  }
-}
-
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const [referralCode, setReferralCode] = useState<string | null>(null);
